@@ -25,7 +25,7 @@ from typing import List
 from .plugin import PluginData
 
 
-class PluginLoader:
+class PluginFinder:
     """
     Loads the data related to all the plugins.
     """
@@ -40,7 +40,7 @@ class PluginLoader:
         self._plugins: List[PluginData] = []
         self._path: str = plugin_path
 
-    def load_plugins(self) -> "PluginLoader":
+    def find_plugins(self) -> "PluginFinder":
         """
         Loads plugins from the specified path.
         """
@@ -48,10 +48,10 @@ class PluginLoader:
         for plugin_file in listdir(self._path):
             if not plugin_file.endswith(".py"):
                 continue
-            self.add_plugin(plugin_file[:-3])
+            self.append_found(plugin_file[:-3])
         return self
 
-    def get_plugins(self) -> List[PluginData]:
+    def list_loaded_plugins(self) -> List[PluginData]:
         """
         Gets the plugins that have been loaded.
 
@@ -60,7 +60,7 @@ class PluginLoader:
         """
         return self._plugins
 
-    def get_plugin(self, name: str) -> PluginData:
+    def lookup_loaded_plugin(self, name: str) -> PluginData:
         """
         Gets the plugin with the specified name from the loaded plugins.
 
@@ -79,7 +79,7 @@ class PluginLoader:
 
         raise LookupError(f"Plugin with name {name} not found.")
 
-    def add_plugin(self, name: str) -> None:
+    def append_found(self, name: str) -> None:
         """
         Adds a plugin to the loaded plugins.
 
@@ -89,7 +89,7 @@ class PluginLoader:
         Raises:
             ValueError: If the plugin already exists.
         """
-        if self.has_plugin(name):
+        if self.has_loaded_plugin(name):
             raise ValueError(f"Plugin with name {name} already exists.")
         
         plugin_module = import_module(f"{self._path}.{name}")
@@ -102,7 +102,7 @@ class PluginLoader:
             )
         )
 
-    def has_plugin(self, name: str) -> bool:
+    def has_loaded_plugin(self, name: str) -> bool:
         """
         Checks if the plugin with the specified name exists.
 
