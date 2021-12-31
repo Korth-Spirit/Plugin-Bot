@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright (c) 2021 Johnathan P. Irvin
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -19,13 +18,16 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import pytest
-from coverage import coverage
+from dataclasses import dataclass
+from types import ModuleType
+from typing import Type
 
-if __name__ == '__main__':
-    cov = coverage(branch=True, omit=['test_*.py'])
-    cov.start()
-    pytest.main()
-    print(cov.report())
-    cov.html_report()
-    cov.stop()
+
+@dataclass
+class PluginData:
+    """
+    Data class for plugin data.
+    """    
+    name: str
+    module: ModuleType
+    class_: Type
