@@ -1,8 +1,14 @@
-# Project Name
+# Plugin Bot
+
+## Warning
+
+This is an example program that uses the Spirit of Korth's Software Development Wrapper for Active Worlds to interact with the [Active Worlds](https://www.activeworlds.com). This project or its contributors are not affiliated with Active Worlds. The Active Worlds SDK is provided in aw64.dll. By using the active worlds SDK, you are agreeing to the terms of the [Active Worlds SDK License Agreement](https://www.activeworlds.com/sdk/download.htm).
 
 ## Introduction
 
-This template is for creating a new project. Please replace this section with your project's introduction.
+The plugin bot handles translating events from an Active Worlds SDK instance into a local event queue. This event queue can then be processed by the plugin. The local event queue can receive events from the plugin or from the Active Worlds SDK. This allows the plugin to be written in a modular fashion, and to be able to create new events for use within other plugins.
+
+The plugin bot automatically dependency injects the event, the bot instance, and any other dependencies into the plugin. The plugin bot will automatically detect plugins that are added and will automatically load them and execute them. The plugin bot will also automatically detect plugins that are removed and will automatically unload them.
 
 ## Usage
 
@@ -29,4 +35,4 @@ This project is licensed under the MIT license.
 
 ## Contribution
 
-This project is open source. Feel free to contribute to the project by making a pull request, creating an issue ticket, or sending an email to [Johnny Irvin](mailto:irvinjohnathan@gmail.com).
+This project is open source. Feel free to contribute to the project by opening an issue, creating a pull request, or by contacting [Johnny Irvin](mailto:irvinjohnathan@gmail.com). I appreciate any feedback or contributions. This project is not affiliated with Active Worlds, Inc. The creator of this project is not affiliated with Active Worlds, Inc. The Active Worlds SDK is provided in aw64.dll. By using the active worlds SDK, you are agreeing to the terms of the [Active Worlds SDK License Agreement](https://www.activeworlds.com/sdk/download.htm).
