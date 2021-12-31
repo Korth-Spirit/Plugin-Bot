@@ -13,20 +13,9 @@ pip install -r requirements.txt
 python run.py
 ```
 
-If you prefer to use docker, you can use the docker image.
-```bash
-docker build -t myproject --target RUN .
-docker run myproject
-```
-
 ## Testing
-To test the library, you can use the `run_tests.py` script. It is highly recommended to use the docker image to keep your system isolated from integration tests.
+To test the library, you can use the `run_tests.py` script.
 
-Using docker, you can run the following commands to run the tests.
-```bash
-docker build -t tests --target TEST .
-docker run tests
-```
 
 You may still run the tests on your system, but it is recommended to use the docker image.
 ```bash
