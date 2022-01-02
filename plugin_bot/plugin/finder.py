@@ -18,11 +18,11 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from importlib import import_module
+from importlib import import_module, reload
 from os import listdir
-from typing import List
+from typing import Iterable
 
-from .plugin import PluginData
+from .plugin import Plugin, PluginData
 
 
 class PluginFinder:
@@ -37,83 +37,48 @@ class PluginFinder:
         Args:
             plugin_path (str): The path to the plugins.
         """
-        self._plugins: List[PluginData] = []
         self._path: str = plugin_path
 
-    def find_plugins(self) -> "PluginFinder":
+    def find_plugins(self) -> Iterable[PluginData]:
         """
         Loads plugins from the specified path.
+
+        Returns:
+            List[PluginData]: The plugins.
         """
         self._plugins = []
         for plugin_file in listdir(self._path):
             if not plugin_file.endswith(".py"):
                 continue
-            self.append_found(plugin_file[:-3])
-        return self
 
-    def list_loaded_plugins(self) -> List[PluginData]:
+            for plugin in self._file_to_plugin(plugin_file[:-3]):
+                yield plugin
+
+    def _file_to_plugin(self, name: str) -> Iterable[PluginData]:
         """
-        Gets the plugins that have been loaded.
+        Loads a plugin from the specified file.
+
+        Args:
+            name (str): The name of the file to load.
 
         Returns:
             List[PluginData]: The plugins.
         """
-        return self._plugins
-
-    def lookup_loaded_plugin(self, name: str) -> PluginData:
-        """
-        Gets the plugin with the specified name from the loaded plugins.
-
-        Args:
-            name (str): The name of the plugin.
-
-        Raises:
-            LookupError: If the plugin does not exist.
-
-        Returns:
-            PluginData: The plugin.
-        """
-        for plugin in self._plugins:
-            if plugin.name == name:
-                return plugin
-
-        raise LookupError(f"Plugin with name {name} not found.")
-
-    def append_found(self, name: str) -> None:
-        """
-        Adds a plugin to the loaded plugins.
-
-        Args:
-            name (str): The name of the plugin.
-
-        Raises:
-            ValueError: If the plugin already exists.
-        """
-        if self.has_loaded_plugin(name):
-            raise ValueError(f"Plugin with name {name} already exists.")
-        
         plugin_module = import_module(f"{self._path}.{name}")
-        plugin_class = getattr(plugin_module, name)
-        self._plugins.append(
-            PluginData(
+        reload(plugin_module)
+
+        plugin_classes = [
+            getattr(plugin_module, export) for export in dir(plugin_module)
+            if (
+                not export.startswith("_") and
+                getattr(plugin_module, export) != type and
+                issubclass(getattr(plugin_module, export), Plugin)
+            )
+        ]
+
+        for plugin_class in plugin_classes:
+            yield PluginData(
                 name=name,
                 module=plugin_module,
                 class_=plugin_class
             )
-        )
-
-    def has_loaded_plugin(self, name: str) -> bool:
-        """
-        Checks if the plugin with the specified name exists.
-
-        Args:
-            name (str): The name of the plugin.
-
-        Returns:
-            bool: Whether the plugin exists.
-        """
-        for plugin in self._plugins:
-            if plugin.name == name:
-                return True
-
-        return False

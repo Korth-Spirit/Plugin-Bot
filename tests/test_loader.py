@@ -18,39 +18,49 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from dataclasses import dataclass
-from types import ModuleType
-from typing import Protocol, Type, runtime_checkable
+from unittest.mock import Mock, patch
 
-from korth_spirit import EventEnum
-from korth_spirit.events import Event
+from plugin_bot.plugin import PluginData, PluginLoader
+from pytest import raises
 
 
-@runtime_checkable
-class Plugin(Protocol):
+def test_load() -> None:
     """
-    Plugin interface.
+    Test the load plugins method.
     """
-    def on_event(self) -> EventEnum:
-        """
-        Event to listen for.
-        """
-        ...
+    plugin_loader = PluginLoader(
+        injector=Mock(),
+        bus=Mock(),
+        finder=Mock()
+    )
 
-    def handle_event(self, event: Event) -> None:
-        """
-        Handle the event.
+    plugin_loader.load(
+        plugin_data=PluginData(
+            name='test',
+            class_=Mock(),
+            module=Mock()
+        )
+    )
 
-        Args:
-            event (Event): The event.
-        """
-        ...
+    assert len(plugin_loader._plugins) == 1
 
-@dataclass
-class PluginData:
+def test_load_raises_value_error_on_duplicate() -> None:
     """
-    Data class for plugin data.
-    """    
-    name: str
-    module: ModuleType
-    class_: Type
+    Test that the load method raises a ValueError on duplicate.
+    """
+    plugin_loader = PluginLoader(
+        injector=Mock(),
+        bus=Mock(),
+        finder=Mock()
+    )
+    plugin_data = PluginData(
+        name='test',
+        class_=object,
+        module=object
+    )
+
+    plugin_loader.load(plugin_data)
+
+    with raises(ValueError):
+        plugin_loader.load(plugin_data)
+    

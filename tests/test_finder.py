@@ -18,39 +18,42 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from dataclasses import dataclass
-from types import ModuleType
-from typing import Protocol, Type, runtime_checkable
+from unittest.mock import call, patch
 
-from korth_spirit import EventEnum
-from korth_spirit.events import Event
+from plugin_bot.plugin import PluginFinder
+from pytest import fixture
 
 
-@runtime_checkable
-class Plugin(Protocol):
+@fixture
+def plugin_finder() -> PluginFinder:
     """
-    Plugin interface.
+    The fixture for the plugin finder.
     """
-    def on_event(self) -> EventEnum:
-        """
-        Event to listen for.
-        """
-        ...
+    return PluginFinder(plugin_path='tests/plugins')
 
-    def handle_event(self, event: Event) -> None:
-        """
-        Handle the event.
-
-        Args:
-            event (Event): The event.
-        """
-        ...
-
-@dataclass
-class PluginData:
+def test_find_plugins(plugin_finder: PluginFinder) -> None:
     """
-    Data class for plugin data.
-    """    
-    name: str
-    module: ModuleType
-    class_: Type
+    Test the find plugins method.
+    """
+
+    with patch(
+        'plugin_bot.plugin.finder.listdir',
+        return_value=[
+            'plugin_a.py',
+            'plugin_b.py',
+            'invalid.c'
+        ]
+    ):
+        with patch(
+            "plugin_bot.plugin.finder.PluginFinder._file_to_plugin",
+        ) as patched:
+            list(plugin_finder.find_plugins())
+            
+            patched.assert_has_calls(
+                [
+                    call('plugin_a'),
+                    call().__iter__(),
+                    call('plugin_b'),
+                    call().__iter__()
+                ]
+            )

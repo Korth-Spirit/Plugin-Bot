@@ -18,9 +18,47 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from korth_spirit import Instance, aw_wait
+from korth_spirit.coords import Coordinates
 
-def main(argc: int, argv: list) -> None:
+from plugin_bot.plugin import (PluginBus, PluginFinder, PluginInjector,
+                               PluginLoader)
+
+
+def main() -> None:
     """
     Main entry point for the application.
     """
-    ...
+    with Instance(
+        name=input("Bot Name: "),
+    ) as bot:
+        plugin_loader: PluginLoader = PluginLoader(
+            injector = PluginInjector(
+                dependencies = {
+                    Instance: bot,
+                },
+            ),
+            bus = PluginBus(
+                instance=bot,
+            ),
+            finder = PluginFinder(
+                plugin_path="plugins"
+            )
+        )
+
+        bot.login(
+            citizen_number=int(input("Citizen Number: ")),
+            password=input("Password: "),
+        ).enter_world(
+            world_name=input("World Name: "),
+        ).move_to(
+            Coordinates(
+                x=int(input("X: ")),
+                y=int(input("Y: ")),
+                z=int(input("Z: ")),
+            )
+        )
+
+        while True:
+            plugin_loader.reload()
+            aw_wait(10)
