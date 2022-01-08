@@ -32,15 +32,14 @@ def main() -> None:
     with Instance(
         name=input("Bot Name: "),
     ) as bot:
+        bus = PluginBus(instance=bot)
         plugin_loader: PluginLoader = PluginLoader(
             injector = PluginInjector(
                 dependencies = {
                     Instance: bot,
                 },
             ),
-            bus = PluginBus(
-                instance=bot,
-            ),
+            bus = bus,
             finder = PluginFinder(
                 plugin_path="plugins"
             )

@@ -46,5 +46,4 @@ class GreeterPlugin:
         Args:
             event (Event): The event.
         """
-        print(vars(event))
         self.instance.say(f"Welcome, {event.avatar_name}!")

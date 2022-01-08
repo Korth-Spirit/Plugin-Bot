@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 Johnathan P. Irvin
+# Copyright (c) 2021 Johnathan P. Irvin
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -18,43 +18,33 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from dataclasses import dataclass
-from enum import Enum
-from types import ModuleType
-from typing import Protocol, Type, Union, runtime_checkable
-
-from korth_spirit import CallBackEnum, EventEnum
+from korth_spirit import EventEnum, Instance
 from korth_spirit.events import Event
 
-EVENT_TYPE = Union[Enum, EventEnum, CallBackEnum, str]
-@runtime_checkable
-class Plugin(Protocol):
+
+class CustomEventPlugin:
     """
-    Plugin interface.
+    Example of a custom event.
     """
-    def on_event(self) -> EVENT_TYPE:
+    @property
+    def on_event(self) -> str:
         """
         Event to listen for.
-
-        Returns:
-            EVENT_TYPE: The event to listen for.
         """
-        ...
+        return 'version_requested'
 
-    def handle_event(self, event: Event) -> None:
+    def __init__(self, instance: Instance) -> None:
+        """
+        Initialize the plugin.
+        """
+        self.instance = instance
+    
+    def handle_event(self) -> None:
         """
         Handle the event.
 
         Args:
             event (Event): The event.
         """
-        ...
-
-@dataclass
-class PluginData:
-    """
-    Data class for plugin data.
-    """    
-    name: str
-    module: ModuleType
-    class_: Type
+        self.instance.say(f"I am a creation of Johnathan Irvin [johnathanirvin.com]!")
+        self.instance.say(f"The most up to date version of plugin bot is on github [https://github.com/Korth-Spirit/Plugin-Bot]!")

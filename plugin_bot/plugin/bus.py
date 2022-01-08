@@ -84,10 +84,13 @@ class PluginBus:
             PluginBus: The plugin bus.
         """
         if isinstance(plugin.on_event, get_args(AW_TYPE)):
-            self.instance.unsubscribe(
-                event=plugin.on_event,
-                subscriber=plugin.handle_event,
-            )
+            try:
+                self.instance.unsubscribe(
+                    event=plugin.on_event,
+                    subscriber=plugin.handle_event,
+                )
+            except ValueError:
+                pass
             return self
 
         self.instance.unsubscribe(
@@ -136,6 +139,7 @@ class PluginBus:
             PluginBus: The plugin bus.
         """
         for subscriber in self._subscribers.get(event, []):
+            print(f"{subscriber.__name__}({args}, {kwargs})")
             subscriber(*args, **kwargs)
         
         return self
