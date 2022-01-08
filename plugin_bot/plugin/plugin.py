@@ -18,22 +18,24 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from dataclasses import dataclass
 from types import ModuleType
-from typing import Protocol, Type, runtime_checkable
+from typing import Protocol, Type, Union, runtime_checkable
+from enum import Enum
+from korth_spirit import EventEnum, CallBackEnum
 
-from korth_spirit import EventEnum
-from korth_spirit.events import Event
 
-
+EVENT_TYPE = Union[Enum, EventEnum, CallBackEnum, str
 @runtime_checkable
 class Plugin(Protocol):
     """
     Plugin interface.
     """
-    def on_event(self) -> EventEnum:
+    def on_event(self) -> EVENT_TYPE:
         """
         Event to listen for.
+
+        Returns:
+            EVENT_TYPE: The event to listen for.
         """
         ...
 
