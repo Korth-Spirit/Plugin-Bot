@@ -67,16 +67,12 @@ class PluginFinder:
         plugin_module = import_module(f"{self._path}.{name}")
         reload(plugin_module)
 
-        plugin_classes = [
-            getattr(plugin_module, export) for export in dir(plugin_module)
-            if (
-                not export.startswith("_") and
-                getattr(plugin_module, export) != type and
-                issubclass(getattr(plugin_module, export), Plugin)
-            )
+        exports = [
+            getattr(plugin_module, attr) for attr in dir(plugin_module)
+            if isinstance(getattr(plugin_module, attr), Plugin)
         ]
 
-        for plugin_class in plugin_classes:
+        for plugin_class in exports:
             yield PluginData(
                 name=name,
                 module=plugin_module,
