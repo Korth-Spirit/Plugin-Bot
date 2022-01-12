@@ -54,7 +54,7 @@ class PluginBus:
             )
             return self
 
-        self.instance.subscribe(
+        self.subscribe(
             event=plugin.on_event,
             subscriber=plugin.handle_event,
         )

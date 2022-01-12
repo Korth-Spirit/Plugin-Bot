@@ -20,6 +20,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from unittest.mock import Mock
 
+from korth_spirit import CallBackEnum, EventEnum
 from plugin_bot.plugin import PluginBus
 from pytest import fixture
 
@@ -34,7 +35,7 @@ def plugin_bus() -> PluginBus:
     """
     return PluginBus(Mock())
 
-def test_register_plugin(plugin_bus: PluginBus) -> None:
+def test_register_generic_plugin(plugin_bus: PluginBus) -> None:
     """
     Test the register plugin method.
 
@@ -43,7 +44,8 @@ def test_register_plugin(plugin_bus: PluginBus) -> None:
     """
     plugin_bus.register_plugin(Mock())
 
-    assert plugin_bus.instance.subscribe.called
+    assert not plugin_bus.instance.subscribe.called
+    assert len(plugin_bus._subscribers) == 1
 
 def test_register_plugins(plugin_bus: PluginBus) -> None:
     """
@@ -54,7 +56,7 @@ def test_register_plugins(plugin_bus: PluginBus) -> None:
     """
     plugin_bus.register_plugins([Mock()])
 
-    assert plugin_bus.instance.subscribe.called
+    assert len(plugin_bus._subscribers) == 1
 
 def test_unregister_plugin(plugin_bus: PluginBus) -> None:
     """
@@ -78,3 +80,16 @@ def test_unregister_plugins(plugin_bus: PluginBus) -> None:
 
     assert plugin_bus.instance.unsubscribe.called
 
+def test_register_aw_plugin(plugin_bus: PluginBus) -> None:
+    """
+    Test the register aw plugin method.
+
+    Args:
+        plugin_bus (PluginBus): The plugin bus.
+    """
+    plugin_bus.register_plugin(Mock(
+        on_event=EventEnum.AW_EVENT_AVATAR_ADD,
+        handle_event=Mock(),
+    ))
+
+    assert plugin_bus.instance.subscribe.called
