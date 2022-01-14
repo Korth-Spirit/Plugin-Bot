@@ -18,8 +18,9 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from functools import partialmethod
-from typing import Dict, Iterable, Type
+import inspect
+from functools import partialmethod, update_wrapper
+from typing import Callable, Dict, Iterable, Type
 
 from .plugin import PluginData
 
@@ -30,7 +31,65 @@ class PluginInjector:
     Functions of the plugin may also be annotated with dependencies, and these will be injected into the plugin.
     The plugin injector stores a list of dependencies and their corresponding values.
     """
-    def __init__(self, dependencies: Dict[Type, object] = {}):
+
+    def _yield_functions(self, plugin: PluginData):
+        """
+        Yields the methods of the plugin.
+
+        Args:
+            plugin (PluginData): The plugin to yield functions of.
+        """
+        for name, function in inspect.getmembers(plugin.class_, inspect.isfunction):
+            yield function
+
+    def _get_annotated_injectables(self, func: Callable) -> Dict:
+        """
+        Gets the annotated injectables from the function.
+
+        Args:
+            func (Callable): The function to inject dependencies into.
+
+        Returns:
+            Dict: The dependencies to inject into the function.
+        """
+        return {
+            arg_name: self.get_dependency(arg_type)
+            for arg_name, arg_type in func.__annotations__.items()
+            if arg_type in self._dependencies.keys()
+            and arg_name != 'return'
+        }
+
+    def _get_named_injectables(self, func: Callable) -> Dict:
+        """
+        Gets the named injectables from the function.
+
+        Args:
+            func (Callable): The function to inject named arguments into.
+
+        Returns:
+            Dict: The named arguments to inject into the function.
+        """
+        return {
+            arg_name: self.get_dependency(arg_name)
+            for arg_name in func.__annotations__.keys()
+            if arg_name in self._dependencies.keys()
+            and arg_name != 'return'
+        }
+
+    def _inject(self, func: Callable, injectables: Dict) -> Callable:
+        """
+        Inject the dependencies into a function.
+
+        Args:
+            func (Callable): The function to inject dependencies into.
+            injectables (Dict): The dependencies to inject into the function.
+
+        Returns:
+            Callable: The function with the injected dependencies.
+        """
+        return update_wrapper(partialmethod(func, **injectables), func)
+
+    def __init__(self, dependencies: Dict[Type, object]):
         """
         Initialize the plugin injector.
 
@@ -49,8 +108,18 @@ class PluginInjector:
         Returns:
             PluginInjector: The plugin injector.
         """
-        self._inject_functions(plugin)
+        for func in self._yield_functions(plugin):
+            injectables = self._get_annotated_injectables(func)
+            injectables.update(self._get_named_injectables(func))
 
+            setattr(
+                plugin.class_,
+                func.__name__,
+                self._inject(
+                    func=func,
+                    injectables=injectables
+                )
+            )
         return self
 
     def inject_all(self, plugins: Iterable[PluginData]) -> "PluginInjector":
@@ -68,48 +137,6 @@ class PluginInjector:
 
         return self
 
-    def _inject_functions(self, plugin: PluginData):
-        """
-        Inject dependencies into the plugin functions.
-
-        Args:
-            plugin (PluginData): The plugin to inject dependencies into.
-        """
-        for function in plugin.class_.__dict__.values():
-            if not hasattr(function, '__annotations__'):
-                continue
-
-            injectable = {
-                key: self.get_dependency(value)
-                for key, value in function.__annotations__.items()
-                if value in self._dependencies.keys()
-            }
-            uninjectable = {
-                key: value
-                for key, value in function.__annotations__.items()
-                if value not in self._dependencies.keys() and
-                "return" not in key
-            }
-
-            if not injectable:
-                continue
-
-            injected_function = partialmethod(function, **uninjectable, **injectable)
-
-            setattr(plugin.class_, function.__name__, injected_function)
-
-    def has_dependency(self, dependency: Type) -> bool:
-        """
-        Checks if the injector has a dependency.
-
-        Args:
-            dependency (Type): The dependency to check for.
-
-        Returns:
-            bool: True if the dependency exists, False otherwise.
-        """
-        return dependency in self._dependencies
-
     def get_dependency(self, dependency: Type) -> object:
         """
         Gets the dependency from the injector.
@@ -122,12 +149,17 @@ class PluginInjector:
         """
         return self._dependencies.get(dependency)
 
-    def set_dependency(self, dependency: Type, value: object):
+    def set_dependency(self, dependency: Type, value: object) -> "PluginInjector":
         """
         Sets the dependency in the injector.
 
         Args:
             dependency (Type): The dependency to set.
             value (object): The value to set the dependency to.
+
+        Returns:
+            PluginInjector: The plugin injector.
         """
         self._dependencies[dependency] = value
+
+        return self
