@@ -69,11 +69,14 @@ class PluginInjector:
         Returns:
             Dict: The named arguments to inject into the function.
         """
+        full_arg_spec = inspect.getfullargspec(func)
+        args = full_arg_spec.args
+        args.extend(full_arg_spec.kwonlyargs or [])
+
         return {
             arg_name: self.get_dependency(arg_name)
-            for arg_name in func.__annotations__.keys()
+            for arg_name in args
             if arg_name in self._dependencies.keys()
-            and arg_name != 'return'
         }
 
     def _inject(self, func: Callable, injectables: Dict) -> Callable:
@@ -109,8 +112,8 @@ class PluginInjector:
             PluginInjector: The plugin injector.
         """
         for func in self._yield_functions(plugin):
-            injectables = self._get_annotated_injectables(func)
-            injectables.update(self._get_named_injectables(func))
+            injectables = self._get_named_injectables(func)
+            injectables.update(self._get_annotated_injectables(func))
 
             setattr(
                 plugin.class_,

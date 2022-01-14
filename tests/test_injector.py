@@ -18,7 +18,7 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from typing import Any, Callable, Type
+from typing import Any, Callable, Tuple, Type
 from unittest.mock import patch
 
 from plugin_bot.plugin import PluginData, PluginInjector
@@ -127,6 +127,19 @@ class FakeClass:
             int: The number from the function.
         """
         return number
+
+    def test_mixed(self, number: int, positional = 'unintended') -> Tuple[int, str]:
+        """
+        Test the mixed arguments.
+
+        Args:
+            number (int): The number.
+            positional (str): The unannotated argument.
+
+        Returns:
+            Tuple(int, str): The number and unannotated argument.
+        """
+        return number, positional
 
 @fixture
 def injector() -> PluginInjector:
@@ -259,3 +272,18 @@ def test_inject_all(injector: PluginInjector, function: Callable, return_value: 
     ])
 
     assert function(FakeClass(), return_value) == return_value
+
+def test_mixed_arguments(injector: PluginInjector) -> None:
+    """
+    Test the mixed arguments.
+
+    Args:
+        injector (PluginInjector): The injector to test.
+    """
+    injector.inject(PluginData(
+        name='test',
+        class_=FakeClass,
+        module=None,
+    ))
+
+    assert FakeClass().test_mixed(number=777, positional='changed') == (777, 'changed')
