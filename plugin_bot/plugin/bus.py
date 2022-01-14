@@ -47,13 +47,16 @@ class PluginBus:
         Returns:
             PluginBus: The plugin bus.
         """
+        if self.has_subscriber(plugin.on_event, plugin.handle_event):   
+            return self
+
         if isinstance(plugin.on_event, get_args(AW_TYPE)):
             self.instance.subscribe(
                 event=plugin.on_event,
                 subscriber=plugin.handle_event,
             )
             return self
-
+        
         self.subscribe(
             event=plugin.on_event,
             subscriber=plugin.handle_event,
@@ -93,7 +96,7 @@ class PluginBus:
                 pass
             return self
 
-        self.instance.unsubscribe(
+        self.unsubscribe(
             event=plugin.on_event,
             subscriber=plugin.handle_event,
         )
@@ -111,6 +114,8 @@ class PluginBus:
         """
         for plugin in plugins:
             self.unregister_plugin(plugin)
+        
+        self.instance.bus.unsubscribe_all()
 
     def subscribe(self, event: Union[str, Enum], subscriber: callable) -> "PluginBus":
         """
@@ -124,6 +129,23 @@ class PluginBus:
             PluginBus: The plugin bus.
         """
         self._subscribers.setdefault(event, []).append(subscriber)
+        return self
+
+    def unsubscribe(self, event: Union[str, Enum], subscriber: callable) -> "PluginBus":
+        """
+        Unsubscribe from an event.
+
+        Args:
+            event (Union[str, Enum]): The event.
+            subscriber (callable): The subscriber.
+
+        Returns:
+            PluginBus: The plugin bus.
+        """
+        try:
+            self._subscribers[event].remove(subscriber)
+        except (KeyError, ValueError):
+            pass
         return self
 
     def publish(self, event: Union[str, Enum], *args, **kwargs) -> "PluginBus":
@@ -142,3 +164,16 @@ class PluginBus:
             subscriber(*args, **kwargs)
         
         return self
+
+    def has_subscriber(self, event: Union[str, Enum], subscriber: callable) -> bool:
+        """
+        Check if a subscriber is subscribed to an event.
+
+        Args:
+            event (Union[str, Enum]): The event.
+            subscriber (callable): The subscriber.
+
+        Returns:
+            bool: Whether or not the subscriber is subscribed.
+        """
+        return subscriber in self._subscribers.get(event, [])
