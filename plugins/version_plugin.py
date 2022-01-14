@@ -18,6 +18,8 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from typing import Callable
+
 from korth_spirit import EventEnum, Instance
 from korth_spirit.events import Event
 
@@ -39,7 +41,7 @@ class VersionPlugin:
         """
         self.instance = instance
     
-    def handle_event(self, event: Event) -> None:
+    def handle_event(self, event: Event, publish: Callable) -> None:
         """
         Handle the event.
 
@@ -49,5 +51,5 @@ class VersionPlugin:
         chat_message = event.chat_message.lower()
 
         if chat_message == "!version":
-            print("Found")
+            publish('version_requested')
         

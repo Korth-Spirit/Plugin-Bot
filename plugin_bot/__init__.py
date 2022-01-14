@@ -37,6 +37,7 @@ def main() -> None:
             injector = PluginInjector(
                 dependencies = {
                     Instance: bot,
+                    "publish": bus.publish,
                 },
             ),
             bus = bus,
@@ -51,13 +52,9 @@ def main() -> None:
         ).enter_world(
             world_name=input("World Name: "),
         ).move_to(
-            Coordinates(
-                x=int(input("X: ")),
-                y=int(input("Y: ")),
-                z=int(input("Z: ")),
-            )
+            Coordinates(0, 0, 0),
         )
 
         while True:
             plugin_loader.reload()
-            aw_wait(10)
+            aw_wait(100)

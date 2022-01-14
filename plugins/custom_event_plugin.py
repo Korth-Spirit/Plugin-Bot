@@ -45,5 +45,5 @@ class CustomEventPlugin:
         Args:
             event (Event): The event.
         """
-        self.instance.say(f"I am a creation of Johnathan Irvin [johnathanirvin.com]!")
+        self.instance.say(f"I am a creation of Johnathan Irvin [https://johnathanirvin.com]!")
         self.instance.say(f"The most up to date version of plugin bot is on github [https://github.com/Korth-Spirit/Plugin-Bot]!")

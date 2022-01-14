@@ -112,9 +112,7 @@ class PluginBus:
         Returns:
             PluginBus: The plugin bus.
         """
-        for plugin in plugins:
-            self.unregister_plugin(plugin)
-        
+        self._subscribers = {}
         self.instance.bus.unsubscribe_all()
 
     def subscribe(self, event: Union[str, Enum], subscriber: callable) -> "PluginBus":
