@@ -18,122 +18,232 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+from typing import Any, Callable, Type
 from unittest.mock import patch
 
 from plugin_bot.plugin import PluginData, PluginInjector
+from pytest import fixture, mark
 
 
-def test_has_dependencies() -> None:
+class FakeClass:
+    def __init__(self, string: str):
+        """
+        Constructs the class.
+
+        Args:
+            string (str): The string to inject.
+        """        
+        self.string = string
+
+    def get_number(self, number: int) -> int:
+        """
+        Gets the number from the function.
+
+        Args:
+            number (int): The number to get.
+
+        Returns:
+            int: The number from the function.
+        """
+        return number
+
+    def get_second_number(self, number: int) -> int:
+        """
+        Get the number from the function.
+
+        Args:
+            number (int): The number to get.
+
+        Returns:
+            int: The number from the function.
+        """
+        return number
+
+    def get_string(self, string: str) -> str:
+        """
+        Gets the string from the function.
+
+        Args:
+            string (str): The string to get.
+
+        Returns:
+            str: The string from the function.
+        """
+        return string
+
+    def get_constructor_string(self) -> str:
+        """
+        Gets the string from the constructor.
+
+        Returns:
+            str: The string from the constructor.
+        """
+        return self.string
+
+    def get_positional_argument(self, positional: str = '') -> str:
+        """
+        Gets the positional argument from the function.
+
+        Args:
+            positional (str): The positional argument to get.
+
+        Returns:
+            str: The positional argument from the function.
+        """
+        return positional
+
+    def get_no_annotation_positional(self, positional = '') -> str:
+        """
+        Get the positional argument from the function.
+
+        Args:
+            positional (str, optional): [description]. Defaults to ''.
+
+        Returns:
+            str: The positional argument from the function.
+        """
+        return positional
+
+    def get_uninjectable_int(self, number) -> int:
+        """
+        Get the number from the function.
+
+        Args:
+            number (int): The number to get.
+
+        Returns:
+            int: The number from the function.
+        """
+        return number
+
+@fixture
+def injector() -> PluginInjector:
     """
-    Test the has dependencies method.
+    Fixture for the injector.
     """
-    injector = PluginInjector(
+    return PluginInjector(
         dependencies={
             str: 'string',
+            int: 555,
+            'positional': 'positional',
         }
     )
 
-    assert injector.has_dependency(str)
-    assert not injector.has_dependency(int)
 
-def test_get_dependency() -> None:
+@mark.parametrize('dependency, value', [
+    (str, 'string'),
+    (int, 555),
+    ('positional', 'positional'),
+])
+def test_get_dependency(injector: PluginInjector, dependency: Type, value: Any) -> None:
     """
     Test the get dependency method.
+
+    Args:
+        injector (PluginInjector): The injector to test.
+        dependency (Type): The dependency to test.
+        value (Any): The value to test.
     """
-    injector = PluginInjector(
-        dependencies={
-            str: 'string',
-        }
-    )
+    assert injector.get_dependency(dependency) == value
 
-    assert injector.get_dependency(str) == 'string'
-    assert injector.get_dependency(int) is None
-
-def test_set_dependency() -> None:
+@mark.parametrize('dependency, value', [
+    (str, 'changed'),
+    (int, 777),
+    ('positional', 'changed'),
+])
+def test_set_dependency(injector: PluginInjector, dependency: Type, value: Any) -> None:
     """
     Test the set dependency method.
+
+    Args:
+        injector (PluginInjector): The injector to test.
+        dependency (Type): The dependency to test.
+        value (Any): The value to test.
     """
-    injector = PluginInjector(
-        dependencies={
-            str: 'string',
-        }
-    )
+    assert injector.set_dependency(
+        dependency=dependency,
+        value=value
+    ).get_dependency(
+        dependency=dependency
+    ) == value
 
-    injector.set_dependency(int, 555)
-    assert injector.get_dependency(int) == 555
-
-def test_inject_functions() -> None:
-    """
-    Test the inject functions method.
-    """
-    injector = PluginInjector(
-        dependencies={
-            str: 'string',
-        }
-    )
-
-    with patch(
-        'plugin_bot.plugin.PluginInjector._inject_functions',
-    ) as patched:
-        injector.inject(
-            PluginData(
-                name='test',
-                class_=object,
-                module=object,
-            )
-        )
-
-        assert patched.call_count == 1
-
-def test_inject_all() -> None:
-    """
-    Test the inject functions method with dependencies.
-    """
-    injector = PluginInjector(
-        dependencies={
-            str: 'string',
-        }
-    )
-
-    with patch(
-        'plugin_bot.plugin.PluginInjector._inject_functions',
-    ) as patched:
-        injector.inject_all(
-            [
-                PluginData(
-                    name='test',
-                    class_=object,
-                    module=object,
-                )
-            ]
-        )
-
-        assert patched.call_count == 1
-
-def test_inject_functions() -> None:
+@mark.parametrize('function, return_value', [
+    (FakeClass.get_number, 555),
+    (FakeClass.get_second_number, 555),
+    (FakeClass.get_string, 'string'),
+    (FakeClass.get_positional_argument, 'positional'),
+    (FakeClass.get_no_annotation_positional, 'positional'),
+])
+def test_injected_functions(injector: PluginInjector, function: Callable, return_value: Any) -> None:
     """
     Test the inject functions method.
+
+    Args:
+        injector (PluginInjector): The injector to test.
+        function (Callable): The function to test.
+        return_value (Any): The return value to test.
     """
-    injector = PluginInjector(
-        dependencies={
-            str: 'string',
-        }
-    )
+    injector.inject(PluginData(
+        name='test',
+        class_=FakeClass,
+        module=None,
+    ))
 
-    class TestClass:
-        def __init__(self, string: str):
-            self.string = string
+    assert function(FakeClass(), return_value) == return_value
 
-        def uninjectable(self, number: int) -> int:
-            return number
+@mark.parametrize('function, return_value', [
+    (FakeClass.get_number, 555),
+    (FakeClass.get_string, 'string'),
+    (FakeClass.get_positional_argument, 'positional'),
+    (FakeClass.get_no_annotation_positional, 'positional'),
+])
+def test_functions_before_injection(function: Callable, return_value: Any) -> None:
+    """
+    Test the functions before injection method.
 
-    injector._inject_functions(
+    Args:
+        function (Callable): The function to test.
+        return_value (Any): The return value to test.
+    """
+    assert function(FakeClass(), return_value) == return_value
+
+def test_uninjectable_function(injector: PluginInjector) -> None:
+    """
+    Test the uninjectable function.
+
+    Args:
+        injector (PluginInjector): The injector to test.
+    """
+    injector.inject(PluginData(
+        name='test',
+        class_=FakeClass,
+        module=None,
+    ))
+
+    assert FakeClass().get_uninjectable_int(777) == 777
+
+@mark.parametrize('function, return_value', [
+    (FakeClass.get_number, 555),
+    (FakeClass.get_second_number, 555),
+    (FakeClass.get_string, 'string'),
+    (FakeClass.get_positional_argument, 'positional'),
+    (FakeClass.get_no_annotation_positional, 'positional'),
+])
+def test_inject_all(injector: PluginInjector, function: Callable, return_value: Any) -> None:
+    """
+    Test the inject all method.
+
+    Args:
+        injector (PluginInjector): The injector to test.
+        function (Callable): The function to test.
+        return_value (Any): The return value to test.
+    """
+    injector.inject_all([
         PluginData(
             name='test',
-            class_=TestClass,
-            module=TestClass,
-        )
-    )
+            class_=FakeClass,
+            module=None,
+        ),
+    ])
 
-    assert TestClass().string == 'string'
-    assert TestClass().uninjectable(1) == 1
+    assert function(FakeClass(), return_value) == return_value
