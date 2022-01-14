@@ -139,7 +139,6 @@ class PluginBus:
             PluginBus: The plugin bus.
         """
         for subscriber in self._subscribers.get(event, []):
-            print(f"{subscriber.__name__}({args}, {kwargs})")
             subscriber(*args, **kwargs)
         
         return self
