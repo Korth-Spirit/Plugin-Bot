@@ -114,9 +114,7 @@ class PluginLoader:
         """
         Reload all plugins.
         """
-        for plugin in self._plugins:
-            self.unload(plugin)
-
+        self.unload_all()
         self.load_all()
 
         return self
