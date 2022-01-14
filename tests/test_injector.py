@@ -104,6 +104,18 @@ class FakeClass:
         """
         return positional
 
+    def get_no_annotation(self, positional) -> str:
+        """
+        The function with no annotation.
+
+        Args:
+            positional (str): The argument.
+
+        Returns:
+            str: The argument.
+        """
+        return positional
+
     def get_uninjectable_int(self, number) -> int:
         """
         Get the number from the function.
@@ -128,7 +140,6 @@ def injector() -> PluginInjector:
             'positional': 'positional',
         }
     )
-
 
 @mark.parametrize('dependency, value', [
     (str, 'string'),
@@ -173,6 +184,7 @@ def test_set_dependency(injector: PluginInjector, dependency: Type, value: Any) 
     (FakeClass.get_string, 'string'),
     (FakeClass.get_positional_argument, 'positional'),
     (FakeClass.get_no_annotation_positional, 'positional'),
+    (FakeClass.get_no_annotation, 'positional'),
 ])
 def test_injected_functions(injector: PluginInjector, function: Callable, return_value: Any) -> None:
     """
