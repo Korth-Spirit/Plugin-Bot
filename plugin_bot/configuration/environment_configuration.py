@@ -19,12 +19,13 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import os
-from typing import Protocol
+from functools import cache
 
 from korth_spirit.coords import Coordinates
 
 
-class EnvironmentConfiguration(Protocol):
+class EnvironmentConfiguration:
+    @cache
     def get_bot_name(self) -> str:
         """
         Returns the name of the bot.
@@ -37,6 +38,7 @@ class EnvironmentConfiguration(Protocol):
         """
         return os.environ["BOT_NAME"]
 
+    @cache
     def get_citizen_number(self) -> int:
         """
         Returns the citizen number of the owner of the bot.
@@ -50,6 +52,7 @@ class EnvironmentConfiguration(Protocol):
         """
         return int(os.environ["CITIZEN_NUMBER"])
 
+    @cache
     def get_password(self) -> str:
         """
         Returns the priviledge password of the owner of the bot.
@@ -62,6 +65,7 @@ class EnvironmentConfiguration(Protocol):
         """
         return os.environ["PASSWORD"]
 
+    @cache
     def get_world_name(self) -> str:
         """
         Returns the name of the world the bot will enter.
@@ -74,7 +78,7 @@ class EnvironmentConfiguration(Protocol):
         """
         return os.environ["WORLD_NAME"]
 
-
+    @cache
     def get_world_coordinates(self) -> Coordinates:
         """
         Returns the coordinates of the world the bot will enter.
@@ -92,6 +96,7 @@ class EnvironmentConfiguration(Protocol):
             int(os.environ["WORLD_Z"])
         )
 
+    @cache
     def get_plugin_path(self) -> str:
         """
         Returns the path where the plugins are stored.
