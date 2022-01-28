@@ -4,6 +4,15 @@
 
 This is an example program that uses the Spirit of Korth's Software Development Wrapper for Active Worlds to interact with the [Active Worlds](https://www.activeworlds.com). This project or its contributors are not affiliated with Active Worlds. The Active Worlds SDK is provided in aw64.dll. By using the active worlds SDK, you are agreeing to the terms of the [Active Worlds SDK License Agreement](https://www.activeworlds.com/sdk/download.htm).
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [License](#license)
+- [Contribution](#contribution)
+
 ## Introduction
 
 The plugin bot handles translating events from an Active Worlds SDK instance into a local event queue. This event queue can then be processed by the plugin. The local event queue can receive events from the plugin or from the Active Worlds SDK. This allows the plugin to be written in a modular fashion, and to be able to create new events for use within other plugins.
@@ -12,7 +21,7 @@ The plugin bot automatically dependency injects the event, the bot instance, and
 
 ## Usage
 
-Inside of a python environment, you can import the requirements and run the following commands to start the project.
+Inside of a python environment, you can import the requirements and run the following commands to start the project. The plugin bot will automatically load plugins from a directory specified in the configuration. Please refer to the [configuration](#configuration) section for more information.
 
 ```bash
 pip install -r requirements.txt
@@ -25,6 +34,11 @@ You may also run the project using Docker with the following command.
 docker build --tag plugin .
 docker run plugin
 ```
+
+## Configuration
+
+Configuration for the plugin bot is currently handled through command line input.
+
 
 ## Testing
 To test the library, you can use the `run_tests.py` script.

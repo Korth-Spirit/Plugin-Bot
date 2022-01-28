@@ -65,7 +65,7 @@ class Configuration(Protocol):
         Returns the coordinates of the world the bot will enter.
 
         Returns:
-            tuple: The coordinates where the bot will enter.
+            Coordinates: The coordinates where the bot will enter.
         """
         ...
 

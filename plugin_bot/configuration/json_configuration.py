@@ -18,81 +18,94 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from functools import cache
+import json
 
 from korth_spirit.coords import Coordinates
 
 
-class InputConfiguration:
-    @cache
+class JsonConfiguration:
+    def __init__(self, config_file: str):
+        """
+        Loads a configuration file and stores the values in the class.
+
+        Args:
+            config_file (str): The path to the configuration file.
+        """
+        with open(config_file, "r") as file:
+            self._config: dict = json.load(file)
+
     def get_bot_name(self) -> str:
         """
         Returns the name of the bot.
 
+        Raises:
+            KeyError: If the bot name is not specified in the configuration file.
+
         Returns:
             str: The name of the bot.
         """
-        return input("Bot name: ")
+        return self._config["bot_name"]
 
-    @cache
     def get_citizen_number(self) -> int:
         """
         Returns the citizen number of the owner of the bot.
 
+        Raises:
+            KeyError: If the citizen number is not specified in the configuration file.
+
         Returns:
             int: The citizen number of the owner of the bot.
         """
-        while True:
-            citizen_number = input("Citizen number: ")
-            if citizen_number.isnumeric():
-                return int(citizen_number)
-            print("Invalid citizen number.")
+        return self._config["citizen_number"]
 
-    @cache
     def get_password(self) -> str:
         """
         Returns the priviledge password of the owner of the bot.
 
+        Raises:
+            KeyError: If the password is not specified in the configuration file.
+
         Returns:
             str: The priviledge password of the owner of the bot.
         """
-        return input("Password: ")
+        return self._config["password"]
 
-    @cache
     def get_world_name(self) -> str:
         """
         Returns the name of the world the bot will enter.
 
+        Raises:
+            KeyError: If the world name is not specified in the configuration file.
+
         Returns:
             str: The name of the world the bot will enter.
         """
-        return input("World name: ")
+        return self._config["world_name"]
 
-    @cache
     def get_world_coordinates(self) -> Coordinates:
         """
         Returns the coordinates of the world the bot will enter.
 
+        Raises:
+            KeyError: If the world coordinates are not specified in the configuration file.
+
         Returns:
             Coordinates: The coordinates where the bot will enter.
         """
-        while True:
-            x, y, z = input(
-                "World coordinates (x, y, z): "
-            ).replace(" ", "").split(",")
+        return Coordinates(
+            x=self._config["world_coordinates"]["x"],
+            y=self._config["world_coordinates"]["y"],
+            z=self._config["world_coordinates"]["z"],
+        )
 
-            if x.isnumeric() and y.isnumeric() and z.isnumeric():
-                return Coordinates(
-                    int(x), int(y), int(z)
-                )
-            print("Invalid coordinates.")
-
-    @cache
     def get_plugin_path(self) -> str:
         """
         Returns the path where the plugins are stored.
 
+        Raises:
+            KeyError: If the plugin path is not specified in the configuration file.
+
         Returns:
             str: The path where the plugins are stored.
         """
-        return input("Plugin path: ")
+        return self._config["plugin_path"]
