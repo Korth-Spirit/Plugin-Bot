@@ -18,8 +18,10 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from .configuration import (AggregateConfiguration, EnvironmentConfiguration,
-                            InputConfiguration, JsonConfiguration)
+from korth_spirit.configuration import (AggregateConfiguration,
+                                        EnvironmentConfiguration,
+                                        InputConfiguration, JsonConfiguration)
+
 from .plugin_instance import PluginInstance
 
 
@@ -39,5 +41,4 @@ def main(argv: list[str]) -> None:
             }
         )
     ) as bot:
-        while bot.manage_plugins():
-            ...
+        bot.main_loop()

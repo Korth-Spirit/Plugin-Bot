@@ -51,7 +51,7 @@ class PluginBus:
             return self
 
         if isinstance(plugin.on_event, get_args(AW_TYPE)):
-            self.instance.subscribe(
+            self.instance.bus.subscribe(
                 event=plugin.on_event,
                 subscriber=plugin.handle_event,
             )
@@ -88,7 +88,7 @@ class PluginBus:
         """
         if isinstance(plugin.on_event, get_args(AW_TYPE)):
             try:
-                self.instance.unsubscribe(
+                self.instance.bus.unsubscribe(
                     event=plugin.on_event,
                     subscriber=plugin.handle_event,
                 )

@@ -18,13 +18,13 @@
 # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-from korth_spirit import Instance, aw_wait
+from korth_spirit import ConfigurableInstance, Instance
+from korth_spirit.configuration import Configuration
 
-from .configuration import Configuration
 from .plugin import PluginBus, PluginFinder, PluginInjector, PluginLoader
 
 
-class PluginInstance(Instance):
+class PluginInstance(ConfigurableInstance):
     def __init__(self, configuration: Configuration):
         """
         Initializes a new instance of the PluginInstance class.
@@ -32,47 +32,22 @@ class PluginInstance(Instance):
         Args:
             configuration (Configuration): The configuration of the bot.
         """        
-        super().__init__(
-            name=configuration.get_bot_name(),
-        )
-        self._configuration: Configuration = configuration
-        self._bus: PluginBus = PluginBus(instance=self)
+        super().__init__(configuration)
+        bus: PluginBus = PluginBus(instance=self)
         self._loader: PluginLoader = PluginLoader(
             injector = PluginInjector(
                 dependencies= {
                     Instance: self,
-                    "publish": self._bus.publish,
+                    "publish": bus.publish,
                 }
             ),
-            bus = self._bus,
+            bus = bus,
             finder = PluginFinder(
                 plugin_path=configuration.get_plugin_path(),
             ),
         )
 
-    def __enter__(self) -> "Instance":
-        """
-        Initializes the instance.
-
-        Returns:
-            Instance: The instance.
-        """
-        return super().__enter__().login(
-            citizen_number=self._configuration.get_citizen_number(),
-            password=self._configuration.get_password()
-        ).enter_world(
-            world_name=self._configuration.get_world_name()
-        ).move_to(
-            coords=self._configuration.get_world_coordinates()
-        )
-
-    def manage_plugins(self) -> bool:
-        """
-        Manages the plugins.
-
-        Returns:
-            bool: True if the plugins were managed successfully, otherwise False.
-        """
+    def main_loop(self) -> None:
         self._loader.reload()
-        aw_wait(100)
-        return True
+        
+        super().main_loop(timer = 100)
