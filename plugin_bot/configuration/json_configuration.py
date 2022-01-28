@@ -19,6 +19,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import json
+from functools import cache
 
 from korth_spirit.coords import Coordinates
 
@@ -34,6 +35,7 @@ class JsonConfiguration:
         with open(config_file, "r") as file:
             self._config: dict = json.load(file)
 
+    @cache
     def get_bot_name(self) -> str:
         """
         Returns the name of the bot.
@@ -46,6 +48,7 @@ class JsonConfiguration:
         """
         return self._config["bot_name"]
 
+    @cache
     def get_citizen_number(self) -> int:
         """
         Returns the citizen number of the owner of the bot.
@@ -58,6 +61,7 @@ class JsonConfiguration:
         """
         return self._config["citizen_number"]
 
+    @cache
     def get_password(self) -> str:
         """
         Returns the priviledge password of the owner of the bot.
@@ -70,6 +74,7 @@ class JsonConfiguration:
         """
         return self._config["password"]
 
+    @cache
     def get_world_name(self) -> str:
         """
         Returns the name of the world the bot will enter.
@@ -82,6 +87,7 @@ class JsonConfiguration:
         """
         return self._config["world_name"]
 
+    @cache
     def get_world_coordinates(self) -> Coordinates:
         """
         Returns the coordinates of the world the bot will enter.
@@ -98,6 +104,7 @@ class JsonConfiguration:
             z=self._config["world_coordinates"]["z"],
         )
 
+    @cache
     def get_plugin_path(self) -> str:
         """
         Returns the path where the plugins are stored.
