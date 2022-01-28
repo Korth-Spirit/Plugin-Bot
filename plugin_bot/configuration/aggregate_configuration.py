@@ -44,7 +44,7 @@ class AggregateConfiguration:
         Returns the name of the bot.
 
         Raises:
-            AttributeError: No configuration has a bot name.
+            KeyError: No configuration has a bot name.
 
         Returns:
             str: The name of the bot.
@@ -52,17 +52,17 @@ class AggregateConfiguration:
         for configuration in self._configurations:
             try:
                 return configuration.get_bot_name()
-            except AttributeError:
+            except KeyError:
                 pass
 
-        raise AttributeError("No configuration has a bot name.")
+        raise KeyError("No configuration has a bot name.")
 
     def get_citizen_number(self) -> int:
         """
         Returns the citizen number of the owner of the bot.
 
         Raises:
-            AttributeError: No configuration has a citizen number.
+            KeyError: No configuration has a citizen number.
 
         Returns:
             int: The citizen number of the owner of the bot.
@@ -70,19 +70,19 @@ class AggregateConfiguration:
         for configuration in self._configurations:
             try:
                 return configuration.get_citizen_number()
-            except AttributeError:
+            except KeyError:
                 pass
             except TypeError:
                 pass
 
-        raise AttributeError("No configuration has a citizen number.")
+        raise KeyError("No configuration has a citizen number.")
 
     def get_password(self) -> str:
         """
         Returns the priviledge password of the owner of the bot.
 
         Raises:
-            AttributeError: No configuration has a password.
+            KeyError: No configuration has a password.
 
         Returns:
             str: The priviledge password of the owner of the bot.
@@ -90,17 +90,17 @@ class AggregateConfiguration:
         for configuration in self._configurations:
             try:
                 return configuration.get_password()
-            except AttributeError:
+            except KeyError:
                 pass
 
-        raise AttributeError("No configuration has a password.")
+        raise KeyError("No configuration has a password.")
 
     def get_world_name(self) -> str:
         """
         Returns the name of the world the bot will enter.
 
         Raises:
-            AttributeError: No configuration has a world name.
+            KeyError: No configuration has a world name.
 
         Returns:
             str: The name of the world the bot will enter.
@@ -108,17 +108,17 @@ class AggregateConfiguration:
         for configuration in self._configurations:
             try:
                 return configuration.get_world_name()
-            except AttributeError:
+            except KeyError:
                 pass
 
-        raise AttributeError("No configuration has a world name.")
+        raise KeyError("No configuration has a world name.")
 
     def get_world_coordinates(self) -> Coordinates:
         """
         Returns the coordinates of the world the bot will enter.
 
         Raises:
-            AttributeError: No configuration has world coordinates.
+            KeyError: No configuration has world coordinates.
 
         Returns:
             Coordinates: The coordinates where the bot will enter.
@@ -126,19 +126,19 @@ class AggregateConfiguration:
         for configuration in self._configurations:
             try:
                 return configuration.get_world_coordinates()
-            except AttributeError:
+            except KeyError:
                 pass
             except TypeError:
                 pass
 
-        raise AttributeError("No configuration has world coordinates.")
+        raise KeyError("No configuration has world coordinates.")
 
     def get_plugin_path(self) -> str:
         """
         Returns the path where the plugins are stored.
 
         Raises:
-            AttributeError: No configuration has a plugin path.
+            KeyError: No configuration has a plugin path.
 
         Returns:
             str: The path where the plugins are stored.
@@ -146,7 +146,7 @@ class AggregateConfiguration:
         for configuration in self._configurations:
             try:
                 return configuration.get_plugin_path()
-            except AttributeError:
+            except KeyError:
                 pass
 
-        raise AttributeError("No configuration has a plugin path.")
+        raise KeyError("No configuration has a plugin path.")
