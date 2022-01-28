@@ -56,7 +56,7 @@ class PluginInstance(Instance):
 
         Returns:
             Instance: The instance.
-        """        
+        """
         return super().__enter__().login(
             citizen_number=self._configuration.get_citizen_number(),
             password=self._configuration.get_password()
@@ -66,14 +66,13 @@ class PluginInstance(Instance):
             coords=self._configuration.get_world_coordinates()
         )
 
-    def manage_plugins(self) -> None:
+    def manage_plugins(self) -> bool:
         """
         Manages the plugins.
+
+        Returns:
+            bool: True if the plugins were managed successfully, otherwise False.
         """
-        try:
-            while True:
-                self._loader.reload()
-                aw_wait(100)
-                yield
-        except KeyboardInterrupt:
-            self._loader.unload_all()
+        self._loader.reload()
+        aw_wait(100)
+        return True
