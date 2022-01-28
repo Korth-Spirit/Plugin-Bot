@@ -19,6 +19,13 @@ pip install -r requirements.txt
 python run.py
 ```
 
+You may also run the project using Docker with the following command.
+
+```bash
+docker build --tag plugin .
+docker run plugin
+```
+
 ## Testing
 To test the library, you can use the `run_tests.py` script.
 
