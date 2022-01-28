@@ -46,16 +46,22 @@ Configuration is an aggregation of multiple configuration sources. The configura
 - The json configuration file
 - The user's input
 
+X coordinates are west/east where west is positive and east is negative.
+Y coordinates represent height where up is positive and down is negative and ground is 0.
+Z coordinates are north/south where north is positive and south is negative.
+
 ### Environment Variables
 
-    `BOT_NAME`: The name of the bot. This is used to identify the bot in Active Worlds.
-    `CITIZEN_NUMBER`: The citizen number for the owner of the bot. This is used to identify which citizen the bot is owned by and which bot count to use.
-    `PASSWORD`: The password for the bot. This is used to log the bot into Active Worlds with the citizen number.
-    `WORLD_NAME`: The name of the world the bot will enter. This is used to identify which world the bot will enter.
-    `WORLD_X`: The x coordinate of the bot. WEST/EAST where WEST is positive and EAST is negative.
-    `WORLD_Y`: The y coordinate of the bot. Height where 0 is the ground, positive values are above the ground, and negative values are below the ground.
-    `WORLD_Z`: The z coordinate of the bot. NORTH/SOUTH where NORTH is positive and SOUTH is negative.
-    'PLUGIN_PATH': The path to the directory containing the plugins.
+| Variable | Description |
+|---------|-------------|
+| `BOT_NAME` | The name of the bot. |
+| `CITIZEN_NUMBER` | The owner of the bot. |
+| `PASSWORD` | The password of the bot. |
+| `PLUGIN_PATH` | The directory to load plugins from. |
+| `WORLD_NAME` | The name of the world to connect to. |
+| `WORLD_X` | The x coordinate of the world to connect to. |
+| `WORLD_Y` | The y coordinate of the world to connect to. |
+| `WORLD_Z` | The z coordinate of the world to connect to. |
 
 ### Json Configuration File
 
