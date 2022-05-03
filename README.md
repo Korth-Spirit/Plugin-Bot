@@ -1,10 +1,8 @@
 # Plugin Bot
 
-## Warning
-
 This is an example program that uses the Spirit of Korth's Software Development Wrapper for Active Worlds to interact with the [Active Worlds](https://www.activeworlds.com). This project or its contributors are not affiliated with Active Worlds. The Active Worlds SDK is provided in aw64.dll. By using the active worlds SDK, you are agreeing to the terms of the [Active Worlds SDK License Agreement](https://www.activeworlds.com/sdk/download.htm).
 
-## Table of Contents
+# Table of Contents
 
 - [Introduction](#introduction)
 - [Usage](#usage)
@@ -16,13 +14,13 @@ This is an example program that uses the Spirit of Korth's Software Development 
 - [License](#license)
 - [Contribution](#contribution)
 
-## Introduction
+# Introduction
 
 The plugin bot handles translating events from an Active Worlds SDK instance into a local event queue. This event queue can then be processed by the plugin. The local event queue can receive events from the plugin or from the Active Worlds SDK. This allows the plugin to be written in a modular fashion, and to be able to create new events for use within other plugins.
 
 The plugin bot automatically dependency injects the event, the bot instance, and any other dependencies into the plugin. The plugin bot will automatically detect plugins that are added and will automatically load them and execute them. The plugin bot will also automatically detect plugins that are removed and will automatically unload them.
 
-## Usage
+# Usage
 
 Inside of a python environment, you can import the requirements and run the following commands to start the project. The plugin bot will automatically load plugins from a directory specified in the configuration. Please refer to the [configuration](#configuration) section for more information.
 
@@ -38,7 +36,7 @@ docker build --tag plugin .
 docker run plugin
 ```
 
-## Configuration
+# Configuration
 
 Configuration is an aggregation of multiple configuration sources. The configuration sources in order of precedence are:
 
@@ -50,7 +48,7 @@ X coordinates are west/east where west is positive and east is negative.
 Y coordinates represent height where up is positive and down is negative and ground is 0.
 Z coordinates are north/south where north is positive and south is negative.
 
-### Environment Variables
+## Environment Variables
 
 | Variable | Description |
 |---------|-------------|
@@ -63,7 +61,7 @@ Z coordinates are north/south where north is positive and south is negative.
 | `WORLD_Y` | The y coordinate of the world to connect to. |
 | `WORLD_Z` | The z coordinate of the world to connect to. |
 
-### Json Configuration File
+## Json Configuration File
 
 The json configuration file is a json file that contains the configuration for the bot. The json file must be called `configuration.json`. IF the json file is not found, no errors occur and the configuration is not used.
 
@@ -83,11 +81,11 @@ Configuration example:
 }
 ```
 
-### User Input
+## User Input
 
 The user input is a series of prompts that are displayed to the user. The user input is used to gather the configuration for the bot when no other configuration is available.
 
-## Testing
+# Testing
 To test the library, you can use the `run_tests.py` script.
 
 
@@ -97,7 +95,7 @@ pip install pytest coverage
 python run_tests.py
 ```
 
-## License
+# License
 
 This project is licensed under the MIT license.
 
